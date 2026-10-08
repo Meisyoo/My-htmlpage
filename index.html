@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>شارژ ساختمان</title>
+<style>
+* { box-sizing: border-box; font-family: Tahoma, Arial, sans-serif; margin: 0; padding: 0; }
+body {
+  padding: 10px;
+  background: linear-gradient(160deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+  background-attachment: fixed;
+  color: #e2e8f0;
+  min-height: 100vh;
+  font-size: 15px;
+}
+.container { max-width: 500px; margin: 0 auto; }
+
+.header-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; gap: 8px; }
+.header-bar h1 {
+  flex: 1; font-size: 17px; text-align: center; font-weight: bold;
+  background: linear-gradient(90deg, #38bdf8, #22d3ee, #a78bfa);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.icon-btn {
+  background: rgba(56,189,248,0.12); border: 1px solid rgba(56,189,248,0.3);
+  color: #38bdf8; width: 40px; height: 40px; border-radius: 10px;
+  font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.icon-btn:active { transform: scale(0.92); }
+.icon-btn.about-btn {
+  background: rgba(217,70,239,0.12); border-color: rgba(217,70,239,0.3);
+  color: #d946ef;
+}
+
+.month-bar {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  background: rgba(30,41,59,0.75); border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 12px; padding: 10px; margin-bottom: 10px;
+}
+.month-nav-btn {
+  background: rgba(56,189,248,0.15); border: 1px solid rgba(56,189,248,0.3);
+  color: #38bdf8; padding: 10px 14px; border-radius: 9px;
+  font-size: 14px; font-weight: bold; cursor: pointer;
+}
+.month-nav-btn:active { transform: scale(0.92); }
+.month-display { flex: 1; text-align: center; font-weight: bold; font-size: 17px; color: #22d3ee; }
+
+.bills-box {
+  background: rgba(30,41,59,0.75); border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 14px; padding: 12px; margin-bottom: 12px;
+}
+.field { margin-bottom: 12px; }
+.field:last-child { margin-bottom: 0; }
+.field label { display: block; font-size: 13px; color: #94a3b8; font-weight: bold; margin-bottom: 6px; text-align: center; }
+.field input {
+  width: 100%; padding: 16px; border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 12px; font-size: 22px; background: rgba(15,23,42,0.8);
+  color: #22d3ee; direction: ltr; text-align: center; font-weight: bold;
+  letter-spacing: 1px;
+}
+.field input:focus { outline: none; border-color: #38bdf8; box-shadow: 0 0 0 3px rgba(56,189,248,0.15); }
+
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.msg-btn, .report-btn { padding: 16px; color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; }
+.msg-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); box-shadow: 0 4px 14px rgba(99,102,241,0.4); }
+.report-btn { background: linear-gradient(135deg, #8b5cf6, #d946ef); box-shadow: 0 4px 14px rgba(217,70,239,0.4); }
+.msg-btn:active, .report-btn:active { transform: scale(0.96); }
+
+.small-action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.clear-btn, .save-btn {
+  padding: 14px; color: #fff; border: none; border-radius: 12px;
+  font-size: 14px; font-weight: bold; cursor: pointer;
+}
+.clear-btn { background: linear-gradient(135deg, #ef4444, #f97316); box-shadow: 0 4px 14px rgba(239,68,68,0.4); }
+.save-btn { background: linear-gradient(135deg, #10b981, #14b8a6); box-shadow: 0 4px 14px rgba(16,185,129,0.4); }
+.clear-btn:active, .save-btn:active { transform: scale(0.96); }
+
+.payment-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.pay-btn {
+  padding: 14px; color: #fff; border: none; border-radius: 12px;
+  font-size: 13px; font-weight: bold; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s;
+}
+.pay-btn.water { background: linear-gradient(135deg, #0ea5e9, #06b6d4); box-shadow: 0 4px 14px rgba(14,165,233,0.4); }
+.pay-btn.electric { background: linear-gradient(135deg, #eab308, #f59e0b); box-shadow: 0 4px 14px rgba(234,179,8,0.4); }
+.pay-btn:active { transform: scale(0.96); }
+.pay-btn.paid { opacity: 0.5; text-decoration: line-through; }
+
+.modal-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center;
+  padding: 12px; z-index: 1000; overflow-y: auto;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border: 1px solid rgba(148,163,184,0.15); border-radius: 16px;
+  width: 100%; max-width: 480px; max-height: 90vh;
+  display: flex; flex-direction: column; overflow: hidden; margin: auto;
+}
+.modal-header {
+  padding: 14px 16px; border-bottom: 1px solid rgba(148,163,184,0.15);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.modal-header h2 { font-size: 15px; color: #38bdf8; }
+.close-btn {
+  background: rgba(248,113,113,0.15); color: #f87171; border: none;
+  border-radius: 8px; width: 34px; height: 34px; font-size: 18px; font-weight: bold; cursor: pointer;
+}
+.close-btn:active { transform: scale(0.9); }
+.modal-body { padding: 14px; overflow-y: auto; flex: 1; }
+
+#msgOverlay .modal {
+  animation: msgDropDown 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes msgDropDown {
+  0%   { opacity: 0; transform: translateY(-40px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+#msgOverlay .modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.msg-modal-textarea {
+  width: 100%;
+  min-height: 400px;
+  background: rgba(0,0,0,0.4);
+  color: #e2e8f0;
+  border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 10px;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 2;
+  font-family: Tahoma, Arial, sans-serif;
+  resize: vertical;
+}
+.copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(16,185,129,0.4);
+}
+.copy-btn:active { transform: scale(0.97); }
+
+.unit-setting {
+  background: rgba(15,23,42,0.6); border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 10px; padding: 10px; margin-bottom: 10px; border-right: 4px solid #60a5fa;
+}
+.unit-setting-title {
+  font-size: 12px; color: #60a5fa; font-weight: bold; margin-bottom: 8px;
+  padding-bottom: 6px; border-bottom: 1px solid rgba(148,163,184,0.15);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.unit-del-btn {
+  background: rgba(248,113,113,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.3);
+  border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: bold; cursor: pointer;
+}
+.unit-del-btn:active { transform: scale(0.92); }
+.unit-setting-row { display: grid; grid-template-columns: 1fr 100px; gap: 8px; align-items: end; }
+.unit-setting-row .cell label { display: block; font-size: 11px; color: #94a3b8; font-weight: bold; margin-bottom: 4px; }
+.unit-setting-row .cell input {
+  width: 100%; padding: 10px; border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 8px; font-size: 14px; background: rgba(15,23,42,0.8);
+  color: #e2e8f0; font-weight: bold; text-align: center;
+}
+.unit-setting-row .cell input.name-input { text-align: right; direction: rtl; }
+.unit-setting-row .cell input:focus { outline: none; border-color: #38bdf8; }
+
+.add-unit-btn {
+  width: 100%; padding: 12px; margin-bottom: 10px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: #fff; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: bold; cursor: pointer;
+}
+.add-unit-btn:active { transform: scale(0.97); }
+
+.section-title {
+  font-size: 13px; color: #22d3ee; font-weight: bold; margin: 14px 0 10px;
+  padding-bottom: 6px; border-bottom: 1px solid rgba(148,163,184,0.15);
+}
+.section-title:first-child { margin-top: 0; }
+
+.setting-row { margin-bottom: 10px; }
+.setting-row label { display: block; font-size: 12px; color: #94a3b8; font-weight: bold; margin-bottom: 5px; }
+.setting-row input {
+  width: 100%; padding: 11px; border: 1px solid rgba(148,163,184,0.2);
+  border-radius: 9px; font-size: 14px; background: rgba(15,23,42,0.8);
+  color: #e2e8f0; font-weight: bold; direction: rtl; text-align: right;
+}
+.setting-row input.card-input { direction: ltr; text-align: left; }
+.setting-row input:focus { outline: none; border-color: #38bdf8; }
+
+.save-settings-btn {
+  width: 100%; padding: 14px;
+  background: linear-gradient(135deg, #10b981, #14b8a6);
+  color: #fff; border: none; border-radius: 10px;
+  font-size: 15px; font-weight: bold; cursor: pointer; margin-top: 16px;
+}
+.save-settings-btn:active { transform: scale(0.97); }
+
+.report-section {
+  background: rgba(15,23,42,0.6); border: 1px solid rgba(148,163,184,0.15);
+  border-radius: 12px; padding: 12px; margin-bottom: 12px;
+}
+.report-section h3 { font-size: 14px; color: #22d3ee; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 1px solid rgba(148,163,184,0.15); }
+.report-row { display: flex; justify-content: space-between; padding: 7px 0; font-size: 14px; border-bottom: 1px dashed rgba(148,163,184,0.1); }
+.report-row:last-child { border-bottom: none; }
+.report-row .lbl { color: #94a3b8; }
+.report-row .val { color: #e2e8f0; font-weight: bold; }
+.report-row.total { border-top: 1px solid rgba(148,163,184,0.2); margin-top: 6px; padding-top: 10px; }
+.report-row.total .lbl { color: #34d399; font-weight: bold; }
+.report-row.total .val { color: #34d399; }
+.report-row.pay-date { font-size: 12px; color: #fbbf24; justify-content: center; gap: 8px; padding: 4px 0; }
+.report-row.sub { font-size: 11px; color: #64748b; padding: 2px 0; }
+
+/* ===== درباره و راهنما ===== */
+.about-header {
+  text-align: center;
+  padding: 16px 10px 18px;
+  border-bottom: 1px solid rgba(148,163,184,0.15);
+  margin-bottom: 14px;
+}
+.about-logo {
+  width: 70px; height: 70px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin: 0 auto 12px;
+  box-shadow: 0 8px 24px rgba(99,102,241,0.4);
+}
+.about-header h3 {
+  font-size: 17px; color: #22d3ee; margin-bottom: 4px;
+}
+.about-header .version {
+  font-size: 12px; color: #94a3b8;
+}
+
+.about-section {
+  background: rgba(15,23,42,0.6);
+  border: 1px solid rgba(148,163,184,0.15);
+  border-right: 4px solid #60a5fa;
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.about-section.creator { border-right-color: #34d399; }
+.about-section.contact { border-right-color: #fbbf24; }
+.about-section h4 {
+  font-size: 13px; color: #60a5fa; font-weight: bold;
+  margin-bottom: 8px; padding-bottom: 6px;
+  border-bottom: 1px solid rgba(148,163,184,0.15);
+}
+.about-section.creator h4 { color: #34d399; }
+.about-section.contact h4 { color: #fbbf24; }
+.about-section p {
+  font-size: 13px; color: #cbd5e1; line-height: 1.9; margin-bottom: 6px;
+}
+.about-section p:last-child { margin-bottom: 0; }
+
+.help-item {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px dashed rgba(148,163,184,0.1);
+  font-size: 12.5px; color: #cbd5e1; line-height: 1.8;
+}
+.help-item:last-child { border-bottom: none; }
+.help-item .num {
+  flex-shrink: 0;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: rgba(56,189,248,0.15);
+  color: #38bdf8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: bold;
+  margin-top: 1px;
+}
+.help-item b { color: #e2e8f0; }
+
+.contact-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 0;
+  font-size: 13px;
+  border-bottom: 1px dashed rgba(148,163,184,0.1);
+}
+.contact-row:last-child { border-bottom: none; }
+.contact-row .key { color: #94a3b8; }
+.contact-row .value {
+  color: #e2e8f0; font-weight: bold;
+  direction: ltr; font-family: Tahoma;
+}
+.contact-row .value.copyable {
+  cursor: pointer;
+  background: rgba(56,189,248,0.1);
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(56,189,248,0.2);
+  transition: all 0.2s;
+}
+.contact-row .value.copyable:active { transform: scale(0.95); }
+
+.thanks-note {
+  text-align: center;
+  font-size: 12px;
+  color: #94a3b8;
+  padding: 12px 8px 4px;
+  line-height: 1.8;
+}
+.thanks-note .heart { color: #f87171; }
+
+.toast-container {
+  position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+  z-index: 10000; display: flex; flex-direction: column; gap: 8px;
+  pointer-events: none; width: calc(100% - 40px); max-width: 380px;
+}
+.toast {
+  background: linear-gradient(135deg, #1e293b, #0f172a);
+  border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 10px; padding: 8px 12px;
+  color: #e2e8f0; font-size: 12px; font-weight: bold;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  display: flex; align-items: center; gap: 8px;
+  opacity: 0; transform: translateY(-20px);
+  transition: opacity 0.3s, transform 0.3s;
+  pointer-events: auto;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast .ico {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; flex-shrink: 0;
+}
+.toast.success { border-color: rgba(52,211,153,0.5); }
+.toast.success .ico { background: rgba(52,211,153,0.2); color: #34d399; }
+.toast.error { border-color: rgba(248,113,113,0.5); }
+.toast.error .ico { background: rgba(248,113,113,0.2); color: #f87171; }
+.toast.info { border-color: rgba(56,189,248,0.5); }
+.toast.info .ico { background: rgba(56,189,248,0.2); color: #38bdf8; }
+.toast.warning { border-color: rgba(251,191,36,0.5); }
+.toast.warning .ico { background: rgba(251,191,36,0.2); color: #fbbf24; }
+
+.confirm-overlay {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.85); display: none;
+  align-items: center; justify-content: center;
+  padding: 20px; z-index: 10001;
+}
+.confirm-overlay.show { display: flex; }
+.confirm-box {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border: 1px solid rgba(148,163,184,0.25);
+  border-radius: 16px; padding: 22px 18px;
+  width: 100%; max-width: 340px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  text-align: center;
+  animation: popIn 0.25s ease;
+}
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+.confirm-box .c-icon {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(56,189,248,0.15); color: #38bdf8;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; margin: 0 auto 14px;
+}
+.confirm-box .c-icon.warn { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.confirm-box .c-icon.danger { background: rgba(248,113,113,0.15); color: #f87171; }
+.confirm-box h3 { font-size: 16px; color: #e2e8f0; margin-bottom: 8px; }
+.confirm-box p { font-size: 13px; color: #94a3b8; margin-bottom: 18px; line-height: 1.7; white-space: pre-line; }
+.confirm-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.confirm-btns button {
+  padding: 13px; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: bold; cursor: pointer; font-family: inherit;
+}
+.confirm-btns button:active { transform: scale(0.96); }
+.c-cancel { background: rgba(148,163,184,0.15); color: #cbd5e1; border: 1px solid rgba(148,163,184,0.25); }
+.c-ok { background: linear-gradient(135deg, #ef4444, #f97316); color: #fff; }
+.c-ok.info { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.c-ok.success { background: linear-gradient(135deg, #10b981, #14b8a6); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header-bar">
+    <button class="icon-btn about-btn" id="aboutBtn" type="button">ℹ️</button>
+    <h1 id="appTitle">⚡ شارژ ساختمان</h1>
+    <button class="icon-btn" id="settingsBtn" type="button">⚙️</button>
+  </div>
+
+  <div class="month-bar">
+    <button class="month-nav-btn" id="prevMonthBtn" type="button">◀ قبلی</button>
+    <div class="month-display" id="monthDisplay">ماه جاری</div>
+    <button class="month-nav-btn" id="nextMonthBtn" type="button">بعدی ▶</button>
+  </div>
+
+  <div class="bills-box">
+    <div class="field">
+      <label>💧 مبلغ آب مشاع (تومان)</label>
+      <input type="text" inputmode="numeric" id="waterBill" value="۰">
+    </div>
+    <div class="field">
+      <label>⚡ مبلغ برق مشاع (تومان)</label>
+      <input type="text" inputmode="numeric" id="electricBill" value="۰">
+    </div>
+    <div class="field">
+      <label>🔧 تعمیرات و نگهداری تاسیسات (تومان)</label>
+      <input type="text" inputmode="numeric" id="repairCost" value="۰">
+    </div>
+    <div class="field">
+      <label>🏠 شارژ ثابت هر واحد (تومان)</label>
+      <input type="text" inputmode="numeric" id="fixedCharge" value="۰">
+    </div>
+  </div>
+
+  <div class="action-row">
+    <button class="msg-btn" id="msgBtn" type="button">📝 متن پیام</button>
+    <button class="report-btn" id="reportBtn" type="button">📊 گزارش</button>
+  </div>
+
+  <div class="small-action-row">
+    <button class="clear-btn" id="clearBtn" type="button">🗑️ پاک کردن</button>
+    <button class="save-btn" id="saveBtn" type="button">💾 محاسبه و ذخیره</button>
+  </div>
+
+  <div class="payment-row">
+    <button class="pay-btn water" id="payWaterBtn" type="button">💧 آب مشاع پرداخت شد</button>
+    <button class="pay-btn electric" id="payElectricBtn" type="button">⚡ برق مشاع پرداخت شد</button>
+  </div>
+</div>
+
+<!-- مودال تنظیمات -->
+<div class="modal-overlay" id="settingsOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>⚙️ تنظیمات</h2>
+      <button class="close-btn" id="closeSettingsBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body" id="settingsBody"></div>
+  </div>
+</div>
+
+<!-- مودال گزارش -->
+<div class="modal-overlay" id="reportOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📊 گزارش ماهانه</h2>
+      <button class="close-btn" id="closeReportBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body" id="reportBody"></div>
+  </div>
+</div>
+
+<!-- مودال متن پیام -->
+<div class="modal-overlay" id="msgOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>📋 متن آماده برای کپی</h2>
+      <button class="close-btn" id="closeMsgBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body">
+      <textarea id="msgText" readonly class="msg-modal-textarea"></textarea>
+      <button class="copy-btn" id="copyBtn" type="button">📋 کپی متن</button>
+    </div>
+  </div>
+</div>
+
+<!-- مودال درباره و راهنما -->
+<div class="modal-overlay" id="aboutOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>ℹ️ درباره و راهنما</h2>
+      <button class="close-btn" id="closeAboutBtn" type="button">✕</button>
+    </div>
+    <div class="modal-body" id="aboutBody"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer"></div>
+
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="c-icon" id="confirmIcon">❓</div>
+    <h3 id="confirmTitle">تأیید</h3>
+    <p id="confirmMessage"></p>
+    <div class="confirm-btns">
+      <button type="button" class="c-cancel" id="confirmCancel">انصراف</button>
+      <button type="button" class="c-ok" id="confirmOk">تأیید</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  var PERSIAN_NUMBERS = [
+    "یک","دو","سه","چهار","پنج","شش","هفت","هشت","نه","ده",
+    "یازده","دوازده","سیزده","چهارده","پانزده","شانزده","هفده","هجده","نوزده","بیست",
+    "بیست و یک","بیست و دو","بیست و سه","بیست و چهار","بیست و پنج","بیست و شش","بیست و هفت","بیست و هشت","بیست و نه","سی"
+  ];
+  var PERSIAN_MONTHS = ["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+  var FA_DIGITS = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+  var STORAGE_KEY = 'bldgCharge_v10';
+  var MAX_UNITS = 30;
+  var DEFAULT_UNITS = 5;
+  var APP_VERSION = '۱.۰';
+  var CONTACT_PHONE = '09351358568';
+  var CREATOR_NAME = 'میثم اکبری';
+
+  var state = {
+    owners: [],
+    people: [],
+    cardNumber: '',
+    cardOwner: '',
+    currentMonth: '',
+    months: {}
+  };
+
+  function initDefaults() {
+    state.owners = [];
+    state.people = [];
+    for (var i = 0; i < DEFAULT_UNITS; i++) {
+      state.owners.push('');
+      state.people.push(1);
+    }
+  }
+
+  function enToFa(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[0-9]/g, function(d) { return FA_DIGITS[+d]; });
+  }
+  function faToEn(str) {
+    if (str === null || str === undefined) return '';
+    return String(str).replace(/[\u06F0-\u06F9]/g, function(c) {
+      return String(FA_DIGITS.indexOf(c));
+    });
+  }
+  function getJalaliDate(date) {
+    var gy = date.getFullYear();
+    var gm = date.getMonth() + 1;
+    var gd = date.getDate();
+    var g_d_m = [0,31,59,90,120,151,181,212,243,273,304,334];
+    var jy = (gy <= 1600) ? 0 : 979;
+    var gy2 = gy - ((gy <= 1600) ? 621 : 1600);
+    var gy3 = (gm > 2) ? (gy2 + 1) : gy2;
+    var days = (365 * gy2) + Math.floor((gy3 + 3) / 4) - Math.floor((gy3 + 99) / 100) + Math.floor((gy3 + 399) / 400) - 80 + gd + g_d_m[gm - 1];
+    jy += 33 * Math.floor(days / 12053);
+    days %= 12053;
+    jy += 4 * Math.floor(days / 1461);
+    days %= 1461;
+    if (days > 365) {
+      jy += Math.floor((days - 1) / 365);
+      days = (days - 1) % 365;
+    }
+    var jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+    var jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+    return { year: jy, month: jm, day: jd };
+  }
+  function getCurrentMonthKey() {
+    var j = getJalaliDate(new Date());
+    return j.year + '-' + (j.month < 10 ? '0' + j.month : String(j.month));
+  }
+  function monthKeyToLabel(key) {
+    if (!key) return '';
+    var p = key.split('-');
+    return PERSIAN_MONTHS[parseInt(p[1], 10) - 1] + ' ' + enToFa(p[0]);
+  }
+  function nextMonthKey(key, delta) {
+    var p = key.split('-');
+    var y = parseInt(p[0], 10);
+    var m = parseInt(p[1], 10);
+    m += delta;
+    while (m > 12) { m -= 12; y += 1; }
+    while (m < 1) { m += 12; y -= 1; }
+    return y + '-' + (m < 10 ? '0' + m : String(m));
+  }
+  function toFa(num) {
+    if (isNaN(num)) return '۰';
+    var r = Math.round(num * 100) / 100;
+    var isInt = Math.abs(r % 1) < 0.0001;
+    var str = isInt ? String(Math.round(r)) : r.toFixed(2);
+    var parts = str.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    return enToFa(parts.join('.'));
+  }
+  function getPersianDateTime() {
+    var now = new Date();
+    var j = getJalaliDate(now);
+    var dateStr = enToFa(j.year) + '/' + enToFa(j.month < 10 ? '0' + j.month : j.month) + '/' + enToFa(j.day < 10 ? '0' + j.day : j.day);
+    var hh = now.getHours();
+    var mm = now.getMinutes();
+    var timeStr = enToFa(hh < 10 ? '0' + hh : String(hh)) + ':' + enToFa(mm < 10 ? '0' + mm : String(mm));
+    return { date: dateStr, time: timeStr, full: dateStr + ' - ساعت ' + timeStr };
+  }
+
+  // ===== توست =====
+  var toastContainer = document.getElementById('toastContainer');
+  function showToast(msg, type, duration) {
+    type = type || 'info';
+    duration = duration || 1500;
+    var icons = { success: '✓', error: '✕', info: 'ℹ', warning: '⚠' };
+    var toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = '<div class="ico">' + (icons[type] || 'ℹ') + '</div><div>' + msg + '</div>';
+    toastContainer.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 10);
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 300);
+    }, duration);
+  }
+
+  // ===== کانفرم =====
+  var confirmOverlay = document.getElementById('confirmOverlay');
+  var confirmIcon = document.getElementById('confirmIcon');
+  var confirmTitle = document.getElementById('confirmTitle');
+  var confirmMessage = document.getElementById('confirmMessage');
+  var confirmOk = document.getElementById('confirmOk');
+  var confirmCancel = document.getElementById('confirmCancel');
+  var confirmCallback = null;
+
+  function showConfirm(opts) {
+    confirmIcon.textContent = opts.icon || '❓';
+    confirmIcon.className = 'c-icon' + (opts.iconType ? ' ' + opts.iconType : '');
+    confirmTitle.textContent = opts.title || 'تأیید';
+    confirmMessage.textContent = opts.message || '';
+    confirmOk.textContent = opts.okText || 'تأیید';
+    confirmOk.className = 'c-ok' + (opts.okType ? ' ' + opts.okType : '');
+    confirmCallback = opts.onOk || null;
+    confirmOverlay.classList.add('show');
+  }
+  function hideConfirm() {
+    confirmOverlay.classList.remove('show');
+    confirmCallback = null;
+  }
+  confirmOk.addEventListener('click', function() {
+    var cb = confirmCallback;
+    hideConfirm();
+    if (cb) cb();
+  });
+  confirmCancel.addEventListener('click', hideConfirm);
+  confirmOverlay.addEventListener('click', function(e) {
+    if (e.target === confirmOverlay) hideConfirm();
+  });
+
+  // ===== ذخیره/بارگذاری =====
+  function saveToStorage() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+  function loadFromStorage() {
+    try {
+      var raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        var data = JSON.parse(raw);
+        if (data.owners && data.owners.length) state.owners = data.owners;
+        if (data.people && data.people.length) state.people = data.people;
+        if (data.cardNumber) state.cardNumber = data.cardNumber;
+        if (data.cardOwner) state.cardOwner = data.cardOwner;
+        if (data.currentMonth) state.currentMonth = data.currentMonth;
+        if (data.months) state.months = data.months;
+      }
+    } catch(e) {}
+  }
+
+  // ===== ماه =====
+  function getMonthData(key) {
+    if (!state.months[key]) {
+      state.months[key] = {
+        waterBill: 0,
+        electricBill: 0,
+        repairCost: 0,
+        fixedCharge: 0,
+        waterPaidDate: null,
+        electricPaidDate: null
+      };
+    }
+    return state.months[key];
+  }
+  function loadMonthToInputs(key) {
+    var m = getMonthData(key);
+    document.getElementById('waterBill').value = toFa(m.waterBill);
+    document.getElementById('electricBill').value = toFa(m.electricBill);
+    document.getElementById('repairCost').value = toFa(m.repairCost);
+    document.getElementById('fixedCharge').value = toFa(m.fixedCharge);
+    updatePayButtons();
+  }
+  function saveInputsToMonth() {
+    var key = state.currentMonth;
+    var m = getMonthData(key);
+    m.waterBill = parseFloat(faToEn(document.getElementById('waterBill').value).replace(/,/g, '')) || 0;
+    m.electricBill = parseFloat(faToEn(document.getElementById('electricBill').value).replace(/,/g, '')) || 0;
+    m.repairCost = parseFloat(faToEn(document.getElementById('repairCost').value).replace(/,/g, '')) || 0;
+    m.fixedCharge = parseFloat(faToEn(document.getElementById('fixedCharge').value).replace(/,/g, '')) || 0;
+  }
+
+  // ===== دکمه‌های پرداخت =====
+  function updatePayButtons() {
+    var m = getMonthData(state.currentMonth);
+    var waterBtn = document.getElementById('payWaterBtn');
+    var elecBtn = document.getElementById('payElectricBtn');
+    if (m.waterPaidDate) waterBtn.classList.add('paid'); else waterBtn.classList.remove('paid');
+    if (m.electricPaidDate) elecBtn.classList.add('paid'); else elecBtn.classList.remove('paid');
+  }
+
+  document.getElementById('payWaterBtn').addEventListener('click', function() {
+    var m = getMonthData(state.currentMonth);
+    if (m.waterPaidDate) {
+      showToast('قبض آب قبلاً پرداخت شده است', 'warning');
+      return;
+    }
+    showConfirm({
+      icon: '💧', iconType: 'warn',
+      title: 'ثبت پرداخت آب مشاع',
+      message: 'آیا از پرداخت قبض آب مشاع مطمئن هستید؟',
+      okText: 'بله، پرداخت شد', okType: 'info',
+      onOk: function() {
+        m.waterPaidDate = getPersianDateTime().full;
+        saveToStorage();
+        updatePayButtons();
+        showToast('پرداخت آب ثبت شد ✓', 'success');
+      }
+    });
+  });
+
+  document.getElementById('payElectricBtn').addEventListener('click', function() {
+    var m = getMonthData(state.currentMonth);
+    if (m.electricPaidDate) {
+      showToast('قبض برق قبلاً پرداخت شده است', 'warning');
+      return;
+    }
+    showConfirm({
+      icon: '⚡', iconType: 'warn',
+      title: 'ثبت پرداخت برق مشاع',
+      message: 'آیا از پرداخت قبض برق مشاع مطمئن هستید؟',
+      okText: 'بله، پرداخت شد', okType: 'info',
+      onOk: function() {
+        m.electricPaidDate = getPersianDateTime().full;
+        saveToStorage();
+        updatePayButtons();
+        showToast('پرداخت برق ثبت شد ✓', 'success');
+      }
+    });
+  });
+
+  // ===== محاسبات =====
+  function calcTotals() {
+    var m = getMonthData(state.currentMonth);
+    var totalShared = m.waterBill + m.electricBill + m.repairCost;
+    var totalPeople = 0;
+    var activeList = [];
+    for (var i = 0; i < state.owners.length; i++) {
+      var owner = (state.owners[i] || '').trim();
+      if (!owner) owner = 'واحد ' + PERSIAN_NUMBERS[i];
+      var p = state.people[i] || 1;
+      totalPeople += p;
+      activeList.push({ index: i, owner: owner, people: p });
+    }
+    var perPerson = totalPeople > 0 ? totalShared / totalPeople : 0;
+    var waterPerPerson = totalPeople > 0 ? m.waterBill / totalPeople : 0;
+    var elecPerPerson = totalPeople > 0 ? m.electricBill / totalPeople : 0;
+    var repairPerPerson = totalPeople > 0 ? m.repairCost / totalPeople : 0;
+
+    var totalAll = 0;
+    var units = [];
+    for (var j = 0; j < activeList.length; j++) {
+      var u = activeList[j];
+      var waterShare = Math.round(waterPerPerson * u.people);
+      var elecShare = Math.round(elecPerPerson * u.people);
+      var repairShare = Math.round(repairPerPerson * u.people);
+      var total = waterShare + elecShare + repairShare + m.fixedCharge;
+      totalAll += total;
+      units.push({
+        index: u.index,
+        owner: u.owner,
+        people: u.people,
+        waterShare: waterShare,
+        elecShare: elecShare,
+        repairShare: repairShare,
+        share: waterShare + elecShare + repairShare,
+        fixed: m.fixedCharge,
+        total: total
+      });
+    }
+    return {
+      totalShared: totalShared,
+      totalPeople: totalPeople,
+      perPerson: perPerson,
+      units: units,
+      totalAll: totalAll
+    };
+  }
+
+  // ===== گزارش =====
+  function buildReport() {
+    var totals = calcTotals();
+    var m = getMonthData(state.currentMonth);
+    var html = '';
+    html += '<div class="report-section">';
+    html += '<h3>📅 ' + monthKeyToLabel(state.currentMonth) + '</h3>';
+    html += '<div class="report-row"><span class="lbl">💧 آب مشاع</span><span class="val">' + toFa(m.waterBill) + ' تومان</span></div>';
+    if (m.waterPaidDate) html += '<div class="report-row pay-date"><span>✅ پرداخت شده: ' + m.waterPaidDate + '</span></div>';
+    html += '<div class="report-row"><span class="lbl">⚡ برق مشاع</span><span class="val">' + toFa(m.electricBill) + ' تومان</span></div>';
+    if (m.electricPaidDate) html += '<div class="report-row pay-date"><span>✅ پرداخت شده: ' + m.electricPaidDate + '</span></div>';
+    html += '<div class="report-row"><span class="lbl">🔧 تعمیرات</span><span class="val">' + toFa(m.repairCost) + ' تومان</span></div>';
+    html += '<div class="report-row total"><span class="lbl">جمع کل هزینه مشاع</span><span class="val">' + toFa(totals.totalShared) + ' تومان</span></div>';
+    html += '<div class="report-row"><span class="lbl">🏠 شارژ ثابت هر واحد</span><span class="val">' + toFa(m.fixedCharge) + ' تومان</span></div>';
+    html += '<div class="report-row"><span class="lbl">👥 مجموع نفرات</span><span class="val">' + toFa(totals.totalPeople) + ' نفر</span></div>';
+    html += '<div class="report-row"><span class="lbl">💰 سهم هر نفر</span><span class="val">' + toFa(totals.perPerson) + ' تومان</span></div>';
+    html += '</div>';
+
+    html += '<div class="report-section">';
+    html += '<h3>🏢 شارژ هر واحد</h3>';
+    if (totals.units.length === 0) {
+      html += '<div class="report-row"><span class="lbl">واحدی ثبت نشده</span></div>';
+    } else {
+      for (var i = 0; i < totals.units.length; i++) {
+        var u = totals.units[i];
+        html += '<div class="report-row"><span class="lbl">' + u.owner + ' (' + toFa(u.people) + ' نفر)</span><span class="val">' + toFa(u.total) + ' تومان</span></div>';
+        html += '<div class="report-row sub" style="padding-right:10px;"><span>💧 ' + toFa(u.waterShare) + ' + ⚡ ' + toFa(u.elecShare) + ' + 🔧 ' + toFa(u.repairShare) + ' + 🏠 ' + toFa(u.fixed) + '</span></div>';
+      }
+      html += '<div class="report-row total"><span class="lbl">جمع کل دریافتی</span><span class="val">' + toFa(totals.totalAll) + ' تومان</span></div>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  // ===== متن پیام =====
+  function buildMessage() {
+    var totals = calcTotals();
+    var m = getMonthData(state.currentMonth);
+    var lines = [];
+
+    for (var i = 0; i < totals.units.length; i++) {
+      var u = totals.units[i];
+      var unitNumber = PERSIAN_NUMBERS[u.index];
+      lines.push('همسایه محترم: ' + u.owner + ' واحد ' + unitNumber);
+      lines.push('👥 تعداد نفرات: ' + toFa(u.people) + ' نفر');
+      lines.push('💧 سهم آب: ' + toFa(u.waterShare) + ' تومان');
+      lines.push('⚡ سهم برق: ' + toFa(u.elecShare) + ' تومان');
+      lines.push('🔧 سهم تاسیسات: ' + toFa(u.repairShare) + ' تومان');
+      lines.push('🏠 شارژ ثابت: ' + toFa(u.fixed) + ' تومان');
+      lines.push('✅ قابل پرداخت: ' + toFa(u.total) + ' تومان');
+      lines.push('━━━━━━━━━━━━━━');
+    }
+
+    if (state.cardNumber) {
+      lines.push('💳 شماره کارت: ' + enToFa(state.cardNumber));
+      if (state.cardOwner) lines.push('👤 به نام: ' + state.cardOwner);
+      lines.push('━━━━━━━━━━━━━━');
+    }
+
+    lines.push('📊 جمع کل دریافتی ساختمان: ' + toFa(totals.totalAll) + ' تومان');
+    lines.push('👥 جمع نفرات: ' + toFa(totals.totalPeople) + ' نفر');
+
+    var dt = getPersianDateTime();
+    lines.push('🗓 تاریخ اعلام صورت‌حساب: ' + dt.date + ' - ساعت ' + dt.time);
+
+    return lines.join('\n');
+  }
+
+  // ===== درباره و راهنما =====
+  function buildAbout() {
+    var html = '';
+    html += '<div class="about-header">';
+    html += '<div class="about-logo">🏢</div>';
+    html += '<h3>برنامه شارژ ساختمان</h3>';
+    html += '<div class="version">نسخه ' + APP_VERSION + '</div>';
+    html += '</div>';
+
+    html += '<div class="about-section">';
+    html += '<h4>📖 درباره برنامه</h4>';
+    html += '<p>این برنامه برای محاسبه دقیق و سریع شارژ ماهانه ساختمان‌های مسکونی طراحی شده است.</p>';
+    html += '<p>با وارد کردن مبلغ قبض‌های آب، برق و تاسیسات مشاع و تعیین سهم هر واحد بر اساس تعداد نفرات، می‌توانید به سرعت سهم هر واحد را محاسبه و متن پیام آماده برای ارسال به ساکنین تهیه کنید.</p>';
+    html += '</div>';
+
+    html += '<div class="about-section creator">';
+    html += '<h4>👨‍💻 سازنده</h4>';
+    html += '<p style="text-align:center;font-size:14px;color:#e2e8f0;font-weight:bold;">' + CREATOR_NAME + '</p>';
+    html += '</div>';
+
+    html += '<div class="about-section contact">';
+    html += '<h4>📞 راه‌های ارتباطی</h4>';
+    html += '<div class="contact-row"><span class="key">شماره تماس</span><span class="value copyable" id="copyPhone">' + enToFa(CONTACT_PHONE) + '</span></div>';
+    html += '<p style="text-align:center;font-size:11px;color:#94a3b8;margin-top:8px;">برای کپی شماره، روی آن ضربه بزنید</p>';
+    html += '</div>';
+
+    html += '<div class="about-section">';
+    html += '<h4>📚 راهنمای استفاده</h4>';
+    html += '<div class="help-item"><div class="num">۱</div><div>در ابتدا از دکمه <b>⚙️ تنظیمات</b>، نام مالکین و تعداد نفرات هر واحد را وارد کنید.</div></div>';
+    html += '<div class="help-item"><div class="num">۲</div><div>شماره کارت و نام صاحب کارت را برای درج در پیام‌ها وارد کنید.</div></div>';
+    html += '<div class="help-item"><div class="num">۳</div><div>مبالغ <b>آب</b>، <b>برق</b>، <b>تاسیسات</b> و <b>شارژ ثابت</b> هر واحد را در صفحه اصلی وارد کنید.</div></div>';
+    html += '<div class="help-item"><div class="num">۴</div><div>با دکمه <b>📝 متن پیام</b> می‌توانید متن آماده هر واحد را کپی و برای ساکنین ارسال کنید.</div></div>';
+    html += '<div class="help-item"><div class="num">۵</div><div>با دکمه <b>📊 گزارش</b>، صورت‌حساب کامل ماه را مشاهده کنید.</div></div>';
+    html += '<div class="help-item"><div class="num">۶</div><div>پس از پرداخت قبض آب یا برق، از دکمه‌های مربوطه استفاده کنید تا تاریخ پرداخت در گزارش ثبت شود.</div></div>';
+    html += '<div class="help-item"><div class="num">۷</div><div>با دکمه‌های <b>◀ قبلی</b> و <b>بعدی ▶</b> می‌توانید بین ماه‌های مختلف جابه‌جا شوید. اطلاعات هر ماه مستقل ذخیره می‌شود.</div></div>';
+    html += '<div class="help-item"><div class="num">۸</div><div>دکمه <b>💾 محاسبه و ذخیره</b> اطلاعات را در حافظه مرورگر ذخیره می‌کند.</div></div>';
+    html += '</div>';
+
+    html += '<div class="thanks-note">';
+    html += 'با سپاس از اعتماد شما <span class="heart">❤️</span><br>';
+    html += 'امیدواریم این برنامه بتواند امور ساختمان شما را ساده‌تر کند.';
+    html += '</div>';
+    return html;
+  }
+
+  // ===== مودال‌ها =====
+  var settingsOverlay = document.getElementById('settingsOverlay');
+  var reportOverlay = document.getElementById('reportOverlay');
+  var msgOverlay = document.getElementById('msgOverlay');
+  var aboutOverlay = document.getElementById('aboutOverlay');
+
+  function openSettings() {
+    buildSettings();
+    settingsOverlay.classList.add('show');
+  }
+  function closeSettings() { settingsOverlay.classList.remove('show'); }
+  function openReport() {
+    document.getElementById('reportBody').innerHTML = buildReport();
+    reportOverlay.classList.add('show');
+  }
+  function closeReport() { reportOverlay.classList.remove('show'); }
+  function openMsg() {
+    document.getElementById('msgText').value = buildMessage();
+    msgOverlay.classList.add('show');
+  }
+  function closeMsg() { msgOverlay.classList.remove('show'); }
+  function openAbout() {
+    document.getElementById('aboutBody').innerHTML = buildAbout();
+    // افزودن رویداد کپی برای شماره تلفن
+    var copyPhone = document.getElementById('copyPhone');
+    if (copyPhone) {
+      copyPhone.addEventListener('click', function() {
+        var phone = CONTACT_PHONE;
+        function done() { showToast('شماره کپی شد ✓', 'success'); }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(phone).then(done).catch(function() {
+            fallbackCopy(phone, done);
+          });
+        } else {
+          fallbackCopy(phone, done);
+        }
+      });
+    }
+    aboutOverlay.classList.add('show');
+  }
+  function closeAbout() { aboutOverlay.classList.remove('show'); }
+
+  function fallbackCopy(text, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); cb(); } catch(e) { showToast('کپی نشد', 'error'); }
+    document.body.removeChild(ta);
+  }
+
+  document.getElementById('closeSettingsBtn').addEventListener('click', closeSettings);
+  document.getElementById('closeReportBtn').addEventListener('click', closeReport);
+  document.getElementById('closeMsgBtn').addEventListener('click', closeMsg);
+  document.getElementById('closeAboutBtn').addEventListener('click', closeAbout);
+  settingsOverlay.addEventListener('click', function(e) { if (e.target === settingsOverlay) closeSettings(); });
+  reportOverlay.addEventListener('click', function(e) { if (e.target === reportOverlay) closeReport(); });
+  msgOverlay.addEventListener('click', function(e) { if (e.target === msgOverlay) closeMsg(); });
+  aboutOverlay.addEventListener('click', function(e) { if (e.target === aboutOverlay) closeAbout(); });
+
+  // ===== کپی متن پیام =====
+  document.getElementById('copyBtn').addEventListener('click', function() {
+    var ta = document.getElementById('msgText');
+    var text = ta.value;
+    function done() {
+      closeMsg();
+      showToast('متن کپی شد ✓', 'success');
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(function() {
+        ta.select();
+        try { document.execCommand('copy'); done(); } catch(e) {}
+      });
+    } else {
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch(e) {
+        showToast('کپی نشد، دستی کپی کنید', 'error');
+      }
+    }
+  });
+
+  // ===== ساخت تنظیمات =====
+  function buildSettings() {
+    var html = '';
+    html += '<div class="section-title">👥 مشخصات واحدها (' + toFa(state.owners.length) + ' واحد)</div>';
+    for (var i = 0; i < state.owners.length; i++) {
+      html += '<div class="unit-setting" data-index="' + i + '">';
+      html += '<div class="unit-setting-title">';
+      html += '<span>واحد ' + PERSIAN_NUMBERS[i] + '</span>';
+      html += '<button type="button" class="unit-del-btn" data-del="' + i + '">🗑️ حذف</button>';
+      html += '</div>';
+      html += '<div class="unit-setting-row">';
+      html += '<div class="cell"><label>نام مالک</label><input type="text" class="name-input" data-owner="' + i + '" value="' + (state.owners[i] || '').replace(/"/g, '&quot;') + '" placeholder="مثلاً: میثم اکبری"></div>';
+      html += '<div class="cell"><label>تعداد نفرات</label><input type="text" inputmode="numeric" data-people="' + i + '" value="' + toFa(state.people[i] || 1) + '"></div>';
+      html += '</div></div>';
+    }
+    html += '<button type="button" class="add-unit-btn" id="addUnitBtn">➕ افزودن واحد جدید</button>';
+    html += '<div class="section-title">💳 اطلاعات کارت</div>';
+    html += '<div class="setting-row"><label>شماره کارت</label><input type="text" inputmode="numeric" class="card-input" id="cardNumberInput" value="' + (state.cardNumber || '') + '" placeholder="---- ---- ---- ----"></div>';
+    html += '<div class="setting-row"><label>نام صاحب کارت</label><input type="text" id="cardOwnerInput" value="' + (state.cardOwner || '') + '"></div>';
+    html += '<button type="button" class="save-settings-btn" id="saveSettingsBtn">💾 ذخیره تنظیمات</button>';
+    document.getElementById('settingsBody').innerHTML = html;
+
+    var inputs = document.querySelectorAll('#settingsBody input[data-owner], #settingsBody input[data-people]');
+    for (var k = 0; k < inputs.length; k++) {
+      inputs[k].addEventListener('input', function() { syncInputsToState(); });
+      inputs[k].addEventListener('change', function() { syncInputsToState(); });
+    }
+
+    var delBtns = document.querySelectorAll('[data-del]');
+    for (var d = 0; d < delBtns.length; d++) {
+      delBtns[d].addEventListener('click', function() {
+        var idx = parseInt(this.getAttribute('data-del'), 10);
+        syncInputsToState();
+        showConfirm({
+          icon: '⚠️', iconType: 'warn',
+          title: 'حذف واحد ' + PERSIAN_NUMBERS[idx],
+          message: 'با حذف این واحد، شماره واحدهای بعدی یک پله جابه‌جا می‌شوند.\n\nلطفاً قبل از ذخیره، شماره واحدها و نام مالکان را بررسی و در صورت نیاز اصلاح کنید.',
+          okText: 'متوجه شدم، حذف کن', okType: 'danger',
+          onOk: function() {
+            state.owners.splice(idx, 1);
+            state.people.splice(idx, 1);
+            if (state.owners.length === 0) {
+              state.owners.push('');
+              state.people.push(1);
+            }
+            saveToStorage();
+            buildSettings();
+            showToast('واحد حذف شد ✓ شماره‌ها را بررسی و ذخیره کنید', 'warning', 3000);
+          }
+        });
+      });
+    }
+
+    document.getElementById('addUnitBtn').addEventListener('click', function() {
+      syncInputsToState();
+      if (state.owners.length >= MAX_UNITS) {
+        showToast('حداکثر ' + toFa(MAX_UNITS) + ' واحد مجاز است', 'warning');
+        return;
+      }
+      state.owners.push('');
+      state.people.push(1);
+      saveToStorage();
+      buildSettings();
+      showToast('واحد جدید اضافه شد', 'success');
+    });
+
+    document.getElementById('saveSettingsBtn').addEventListener('click', function() {
+      syncInputsToState();
+      saveToStorage();
+      closeSettings();
+      showToast('تنظیمات ذخیره شد ✓', 'success');
+    });
+  }
+
+  function syncInputsToState() {
+    var nameInputs = document.querySelectorAll('#settingsBody input[data-owner]');
+    var peopleInputs = document.querySelectorAll('#settingsBody input[data-people]');
+    for (var i = 0; i < nameInputs.length; i++) {
+      var idx = parseInt(nameInputs[i].getAttribute('data-owner'), 10);
+      if (!isNaN(idx) && idx < state.owners.length) {
+        state.owners[idx] = nameInputs[i].value.trim();
+      }
+    }
+    for (var j = 0; j < peopleInputs.length; j++) {
+      var idx2 = parseInt(peopleInputs[j].getAttribute('data-people'), 10);
+      if (!isNaN(idx2) && idx2 < state.people.length) {
+        var val = parseInt(faToEn(peopleInputs[j].value), 10);
+        state.people[idx2] = (isNaN(val) || val < 1) ? 1 : val;
+      }
+    }
+    var cardNumEl = document.getElementById('cardNumberInput');
+    var cardOwnerEl = document.getElementById('cardOwnerInput');
+    if (cardNumEl) state.cardNumber = cardNumEl.value.trim();
+    if (cardOwnerEl) state.cardOwner = cardOwnerEl.value.trim();
+  }
+
+  // ===== ذخیره و پاک کردن =====
+  document.getElementById('saveBtn').addEventListener('click', function() {
+    saveInputsToMonth();
+    saveToStorage();
+    var totals = calcTotals();
+    showToast('محاسبه شد: ' + toFa(totals.units.length) + ' واحد | جمع: ' + toFa(totals.totalAll) + ' تومان', 'success', 2500);
+  });
+
+  document.getElementById('clearBtn').addEventListener('click', function() {
+    showConfirm({
+      icon: '🗑️', iconType: 'danger',
+      title: 'پاک کردن اطلاعات',
+      message: 'تمام اطلاعات ماه جاری پاک شود؟',
+      okText: 'بله، پاک کن', okType: 'danger',
+      onOk: function() {
+        state.months[state.currentMonth] = {
+          waterBill: 0, electricBill: 0, repairCost: 0, fixedCharge: 0,
+          waterPaidDate: null, electricPaidDate: null
+        };
+        saveToStorage();
+        loadMonthToInputs(state.currentMonth);
+        showToast('اطلاعات پاک شد', 'info');
+      }
+    });
+  });
+
+  // ===== ناوبری ماه =====
+  document.getElementById('prevMonthBtn').addEventListener('click', function() {
+    saveInputsToMonth();
+    state.currentMonth = nextMonthKey(state.currentMonth, -1);
+    saveToStorage();
+    document.getElementById('monthDisplay').textContent = monthKeyToLabel(state.currentMonth);
+    loadMonthToInputs(state.currentMonth);
+  });
+  document.getElementById('nextMonthBtn').addEventListener('click', function() {
+    saveInputsToMonth();
+    state.currentMonth = nextMonthKey(state.currentMonth, 1);
+    saveToStorage();
+    document.getElementById('monthDisplay').textContent = monthKeyToLabel(state.currentMonth);
+    loadMonthToInputs(state.currentMonth);
+  });
+
+  // ===== دکمه‌ها =====
+  document.getElementById('settingsBtn').addEventListener('click', openSettings);
+  document.getElementById('reportBtn').addEventListener('click', openReport);
+  document.getElementById('msgBtn').addEventListener('click', openMsg);
+  document.getElementById('aboutBtn').addEventListener('click', openAbout);
+
+  // ===== اعداد =====
+  function formatInput(el) {
+    var raw = faToEn(el.value).replace(/[^\d.]/g, '');
+    if (raw === '' || raw === '.') { el.value = '۰'; return; }
+    var parts = raw.split('.');
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    el.value = enToFa(parts.join('.'));
+  }
+  var inputIds = ['waterBill', 'electricBill', 'repairCost', 'fixedCharge'];
+  for (var i = 0; i < inputIds.length; i++) {
+    (function(id) {
+      var el = document.getElementById(id);
+      el.addEventListener('input', function() { formatInput(el); });
+      el.addEventListener('focus', function() { if (el.value === '۰') el.value = ''; });
+      el.addEventListener('blur', function() { if (el.value === '') el.value = '۰'; });
+    })(inputIds[i]);
+  }
+
+  // ===== راه‌اندازی =====
+  function init() {
+    initDefaults();
+    loadFromStorage();
+    if (!state.owners || state.owners.length === 0) initDefaults();
+    if (!state.people || state.people.length !== state.owners.length) {
+      state.people = [];
+      for (var i = 0; i < state.owners.length; i++) state.people.push(1);
+    }
+    if (!state.currentMonth) state.currentMonth = getCurrentMonthKey();
+    document.getElementById('monthDisplay').textContent = monthKeyToLabel(state.currentMonth);
+    loadMonthToInputs(state.currentMonth);
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
