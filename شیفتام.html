@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<title>شیفت‌ها</title>
+<meta name="theme-color" content="#0f172a">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;}
+html{
+    margin:0;padding:0;min-height:100%;
+    background:#0f172a;
+    overscroll-behavior-y:none;
+    touch-action:pan-y;
+    -webkit-overflow-scrolling:touch;
+}
+body{
+    margin:0;padding:0;
+    min-height:100vh;
+    background:#0f172a;
+    font-family:Calibri,Tahoma,Arial,sans-serif;
+    color:#fff;
+    padding-top:env(safe-area-inset-top);
+    padding-bottom:env(safe-area-inset-bottom);
+    -webkit-user-select:none;
+    user-select:none;
+    overflow-x:hidden;
+    overflow-y:auto;
+    touch-action:pan-y;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-y:none;
+}
+.container{width:100%;max-width:900px;margin:auto;padding:15px;padding-left:calc(15px + env(safe-area-inset-left));padding-right:calc(15px + env(safe-area-inset-right));}
+
+.header{display:flex;align-items:center;justify-content:flex-start;gap:4px;margin-bottom:12px;flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;padding-bottom:4px;-webkit-overflow-scrolling:touch;touch-action:pan-x;}
+.header::-webkit-scrollbar{display:none;}
+.header button{border:0;background:#1e293b;color:#fff;height:38px;min-width:38px;padding:0 5px;border-radius:9px;font-size:17px;cursor:pointer;flex-shrink:0;font-family:inherit;display:flex;align-items:center;justify-content:center;}
+.header button:active{transform:scale(.94);}
+.header button.today-btn{font-size:11px;font-weight:bold;background:#facc15;color:#0f172a;padding:0 8px;}
+.header button.about-btn{font-size:15px;background:#22d3ee;color:#0f172a;padding:0 8px;}
+.header button.settings-btn{font-size:15px;background:#a855f7;color:#fff;padding:0 8px;}
+.header button.send-btn{font-size:15px;background:#10b981;color:#fff;padding:0 8px;}
+.header button.receive-btn{font-size:15px;background:#f59e0b;color:#fff;padding:0 8px;}
+.header button.nav-btn{font-size:19px;font-weight:bold;}
+
+.month-title{font-size:14px;font-weight:bold;text-align:center;padding:0 6px;white-space:nowrap;flex-shrink:0;min-width:88px;}
+
+.week-days{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;margin-bottom:5px;}
+.week-day{text-align:center;background:#1e293b;color:#cbd5e1;padding:8px 2px;border-radius:8px;font-size:13px;font-weight:bold;transition:.3s;}
+.week-day.friday{color:#fb7185;}
+.week-day.today-col{
+    background:#facc15;
+    color:#0f172a;
+    box-shadow:0 0 0 2px rgba(250,204,21,.35), 0 0 18px rgba(250,204,21,.55);
+    animation:todayPulseHeader 1.8s ease-in-out infinite;
+}
+
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.day-card{min-height:105px;padding:7px 5px;background:rgba(30,41,59,.9);border:1px solid rgba(148,163,184,.2);border-radius:12px;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:.15s;overflow:hidden;}
+.day-card:active{transform:scale(.96);}
+.day-card.empty{background:transparent;border:0;cursor:default;}
+.day-number{width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;margin-bottom:3px;}
+.day-card.friday .day-number{color:#fb7185;}
+
+.day-card.today{
+    border:2px solid #facc15;
+    background:rgba(250,204,21,.08);
+    box-shadow:0 0 0 2px rgba(250,204,21,.25), 0 0 22px rgba(250,204,21,.45);
+    animation:todayPulseCard 1.8s ease-in-out infinite;
+}
+
+.shift-tag{width:100%;text-align:center;color:#fff;font-size:11px;font-weight:bold;padding:5px 3px;margin-top:3px;border-radius:8px;display:flex;align-items:center;justify-content:center;line-height:1.2;}
+.shift-admari{background:#16a34a;}
+.shift-bimarestan{background:#2563eb;}
+.shift-talafroshi{background:#f97316;}
+.shift-forushgah{background:#a855f7;}
+.shift-morkhasi{background:#64748b;}
+.shift-default{background:#475569;}
+.day-card.single-shift{padding:5px;}
+.day-card.single-shift .day-number{margin-bottom:2px;}
+.day-card.single-shift .shift-tag{flex:1;min-height:0;width:100%;margin-top:2px;margin-bottom:0;border-radius:9px;font-size:15px;padding:3px;}
+
+@keyframes todayPulseCard{
+    0%,100%{box-shadow:0 0 0 2px rgba(250,204,21,.25), 0 0 22px rgba(250,204,21,.45);}
+    50%    {box-shadow:0 0 0 3px rgba(250,204,21,.55), 0 0 34px rgba(250,204,21,.85);}
+}
+@keyframes todayPulseHeader{
+    0%,100%{box-shadow:0 0 0 2px rgba(250,204,21,.35), 0 0 18px rgba(250,204,21,.55);}
+    50%    {box-shadow:0 0 0 3px rgba(250,204,21,.65), 0 0 26px rgba(250,204,21,.95);}
+}
+
+.shift-counter{margin-top:15px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;padding:12px;background:rgba(30,41,59,.6);border:1px solid rgba(148,163,184,.2);border-radius:12px;}
+.shift-counter .counter-item{display:flex;align-items:center;gap:6px;background:#1e293b;padding:8px 14px;border-radius:10px;font-size:14px;font-weight:bold;}
+.shift-counter .counter-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.shift-counter .counter-dot.admari{background:#16a34a;}
+.shift-counter .counter-dot.bimarestan{background:#2563eb;}
+.shift-counter .counter-dot.talafroshi{background:#f97316;}
+.shift-counter .counter-dot.forushgah{background:#a855f7;}
+.shift-counter .counter-dot.morkhasi{background:#64748b;}
+.shift-counter .counter-count{color:#facc15;font-size:15px;margin-right:2px;}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:15px;z-index:1000;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);}
+.modal.show{display:flex;}
+.modal-box{width:100%;max-width:440px;background:#172033;border:1px solid #334155;border-radius:18px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.5);max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;}
+.modal-title{font-size:20px;font-weight:bold;text-align:center;margin-bottom:5px;}
+.greg-date{text-align:center;color:#94a3b8;font-size:13px;margin-bottom:18px;}
+.shift-options{display:flex;flex-direction:column;gap:10px;}
+.shift-option{min-height:55px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:17px;font-weight:bold;cursor:pointer;border:2px solid transparent;transition:.15s;}
+.shift-option:active{transform:scale(.97);}
+.shift-option.selected{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.15);}
+.shift-option.admari{background:#16a34a;}
+.shift-option.bimarestan{background:#2563eb;}
+.shift-option.talafroshi{background:#f97316;}
+.shift-option.forushgah{background:#a855f7;}
+.shift-option.morkhasi{background:#64748b;}
+.check{margin-right:8px;font-size:20px;}
+.close-btn{width:100%;height:48px;margin-top:15px;border:0;border-radius:11px;background:#334155;color:#fff;font-family:inherit;font-size:16px;font-weight:bold;cursor:pointer;}
+.close-btn:active{transform:scale(.98);}
+.settings-group{margin-bottom:10px;}
+.settings-group input{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0f172a;color:#fff;font-family:inherit;font-size:15px;outline:none;text-align:center;}
+.settings-group input:focus{border-color:#a855f7;}
+.about-content{line-height:1.9;font-size:14px;color:#cbd5e1;}
+.about-content .section{background:#0f172a;border:1px solid #334155;border-radius:12px;padding:14px 16px;margin-bottom:12px;}
+.about-content .section-title{color:#facc15;font-size:15px;font-weight:bold;margin-bottom:8px;}
+.about-content .step{display:flex;gap:8px;align-items:flex-start;margin-bottom:6px;font-size:13px;}
+.about-content .step .num{background:#a855f7;color:#fff;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;flex-shrink:0;margin-top:2px;}
+.about-content .legend{display:flex;align-items:center;gap:8px;font-size:12px;margin-bottom:6px;}
+.about-content .legend .color{width:16px;height:16px;border-radius:5px;flex-shrink:0;}
+.about-content .author{background:linear-gradient(135deg,#a855f7,#6366f1);border-radius:12px;padding:16px;text-align:center;margin-top:12px;}
+.about-content .author .app-name{font-size:16px;font-weight:bold;color:#fff;margin-bottom:4px;}
+.about-content .author .author-name{font-size:14px;color:#fff;margin-bottom:8px;}
+.about-content .author .phone{display:inline-block;background:rgba(255,255,255,.15);color:#fff;padding:8px 16px;border-radius:20px;font-size:14px;font-weight:bold;text-decoration:none;border:1px solid rgba(255,255,255,.25);direction:ltr;}
+
+.share-actions{display:flex;flex-direction:column;gap:10px;margin-top:15px;}
+.share-actions button{height:48px;border:0;border-radius:11px;font-family:inherit;font-size:15px;font-weight:bold;cursor:pointer;color:#fff;}
+.share-actions .primary{background:#10b981;}
+.share-actions .secondary{background:#3b82f6;}
+.share-actions .neutral{background:#64748b;}
+.share-actions button:active{transform:scale(.98);}
+
+.day-nav{display:flex;gap:10px;margin-top:15px;margin-bottom:10px;}
+.day-nav button{flex:1;height:48px;border:0;border-radius:11px;background:#334155;color:#fff;font-family:inherit;font-size:15px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;}
+.day-nav button:active{transform:scale(.97);}
+.day-nav button:disabled{opacity:.35;cursor:not-allowed;}
+
+@media(max-width:600px){
+.container{padding:8px;padding-left:calc(8px + env(safe-area-inset-left));padding-right:calc(8px + env(safe-area-inset-right));}
+.header{gap:3px;}
+.header button{height:34px;min-width:34px;font-size:15px;padding:0 4px;border-radius:8px;}
+.header button.today-btn{font-size:10px;padding:0 6px;}
+.header button.about-btn,.header button.settings-btn,.header button.send-btn,.header button.receive-btn{font-size:13px;padding:0 6px;}
+.month-title{font-size:12px;min-width:72px;padding:0 4px;}
+.week-days{gap:3px;}
+.week-day{padding:6px 1px;font-size:11px;}
+.calendar{gap:3px;}
+.day-card{min-height:76px;padding:4px 2px;border-radius:8px;}
+.day-number{width:23px;height:23px;font-size:12px;}
+.shift-tag{font-size:9px;padding:3px 1px;border-radius:6px;}
+.day-card.single-shift{padding:3px;}
+.day-card.single-shift .shift-tag{flex:1;font-size:11px;padding:3px 1px;border-radius:6px;}
+.modal-box{padding:16px;}
+.shift-counter{padding:8px;gap:6px;margin-top:10px;}
+.shift-counter .counter-item{font-size:11px;padding:6px 10px;}
+.shift-counter .counter-dot{width:9px;height:9px;}
+.shift-counter .counter-count{font-size:12px;}
+.about-content{font-size:13px;}
+.day-nav button{height:44px;font-size:14px;}
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <button id="prevMonth" class="nav-btn" type="button">‹</button>
+        <button id="nextMonth" class="nav-btn" type="button">›</button>
+        <div class="month-title" id="monthTitle"></div>
+        <button id="todayBtn" class="today-btn" type="button">امروز</button>
+        <button id="settingsBtn" class="settings-btn" type="button" title="تنظیمات">⚙️</button>
+        <button id="sendBtn" class="send-btn" type="button" title="اشتراک‌گذاری">📤</button>
+        <button id="receiveBtn" class="receive-btn" type="button" title="دریافت">📥</button>
+        <button id="aboutBtn" class="about-btn" type="button" title="درباره">ℹ️</button>
+    </div>
+
+    <div class="week-days">
+        <div class="week-day">شنبه</div>
+        <div class="week-day">یکشنبه</div>
+        <div class="week-day">دوشنبه</div>
+        <div class="week-day">سه‌شنبه</div>
+        <div class="week-day">چهارشنبه</div>
+        <div class="week-day">پنجشنبه</div>
+        <div class="week-day friday">جمعه</div>
+    </div>
+
+    <div class="calendar" id="calendar"></div>
+    <div class="shift-counter" id="shiftCounter"></div>
+</div>
+
+<div class="modal" id="modal">
+    <div class="modal-box">
+        <div class="modal-title" id="modalTitle">انتخاب شیفت</div>
+        <div class="greg-date" id="gregDate"></div>
+        <div class="shift-options" id="shiftOptionsContainer"></div>
+        <div class="day-nav">
+            <button id="prevDayBtn" type="button">‹ روز قبل</button>
+            <button id="nextDayBtn" type="button">روز بعد ›</button>
+        </div>
+        <button class="close-btn" id="saveAndClose" type="button" style="background:#10b981;">ذخیره و بستن</button>
+        <button class="close-btn" id="closeModal" type="button">بستن</button>
+    </div>
+</div>
+
+<div class="modal" id="settingsModal">
+    <div class="modal-box">
+        <div class="modal-title">تغییر عنوان شیفت‌ها</div>
+        <div class="greg-date">عنوان دلخواه خود را وارد کنید</div>
+        <div id="settingsFields"></div>
+        <button class="close-btn" id="saveSettings" type="button" style="background:#a855f7;">ذخیره</button>
+        <button class="close-btn" id="closeSettings" type="button">بستن</button>
+    </div>
+</div>
+
+<div class="modal" id="shareModal">
+    <div class="modal-box">
+        <div class="modal-title">📤 اشتراک‌گذاری شیفت‌ها</div>
+        <div class="greg-date">فرمت فایل را انتخاب کنید</div>
+        <div class="share-actions">
+            <button class="primary" id="shareAllBtn" type="button">💾 دانلود فایل JSON</button>
+            <button class="secondary" id="shareAllTxtBtn" type="button">📄 دانلود فایل متنی (txt)</button>
+            <button class="neutral" id="closeShare" type="button">بستن</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="aboutModal">
+    <div class="modal-box">
+        <div class="modal-title">ℹ️ درباره و راهنما</div>
+        <div class="greg-date">تقویم مدیریت شیفت‌های کاری</div>
+        <div class="about-content">
+            <div class="section">
+                <div class="section-title">📖 راهنمای استفاده</div>
+                <div class="step"><span class="num">۱</span><span>روی هر روز تقویم کلیک کنید تا مودال انتخاب شیفت باز شود.</span></div>
+                <div class="step"><span class="num">۲</span><span>می‌توانید برای یک روز چند شیفت انتخاب کنید (با کلیک مجدد، شیفت حذف می‌شود).</span></div>
+                <div class="step"><span class="num">۳</span><span>با دکمه‌های ‹ و › ماه‌های قبل و بعد را ببینید.</span></div>
+                <div class="step"><span class="num">۴</span><span>دکمه «امروز» شما را به ماه جاری برمی‌گرداند.</span></div>
+                <div class="step"><span class="num">۵</span><span>با دکمه ⚙️ عنوان شیفت‌ها را تغییر دهید.</span></div>
+                <div class="step"><span class="num">۶</span><span>با 📤 شیفت‌ها را برای دیگری ارسال کنید و با 📥 دریافت کنید.</span></div>
+            </div>
+            <div class="section">
+                <div class="section-title">🎨 راهنمای رنگ‌ها</div>
+                <div class="legend"><span class="color" style="background:#16a34a;"></span><span>اداره (سبز)</span></div>
+                <div class="legend"><span class="color" style="background:#2563eb;"></span><span>بیمارستان (آبی)</span></div>
+                <div class="legend"><span class="color" style="background:#f97316;"></span><span>طلا فروشی (نارنجی)</span></div>
+                <div class="legend"><span class="color" style="background:#a855f7;"></span><span>فروشگاه (بنفش)</span></div>
+                <div class="legend"><span class="color" style="background:#64748b;"></span><span>مرخصی (خاکستری)</span></div>
+                <div class="legend"><span class="color" style="background:#facc15;"></span><span>روز جاری (زرد)</span></div>
+            </div>
+            <div class="section">
+                <div class="section-title">💾 ذخیره‌سازی</div>
+                <div class="step">تمام اطلاعات شما به‌صورت خودکار روی همین دستگاه ذخیره می‌شود و با بستن برنامه از بین نمی‌رود.</div>
+            </div>
+            <div class="author">
+                <div class="app-name">📅 برنامه شغل دوم</div>
+                <div class="author-name">تولید شده توسط میثم اکبری</div>
+                <a href="tel:09351358568" class="phone">📞 ۰۹۳۵۱۳۵۸۵۶۸</a>
+            </div>
+        </div>
+        <button class="close-btn" id="closeAbout" type="button">بستن</button>
+    </div>
+</div>
+
+<input type="file" id="fileInput" accept=".json,.txt,application/json,text/plain" style="display:none;">
+
+<script>
+var jalaali = (function(){
+    'use strict';
+    function div(a, b){ return ~~(a / b); }
+    function mod(a, b){ return a - ~~(a / b) * b; }
+    function jalCal(jy, withoutLeap){
+        var breaks = [-61, 9, 38, 199, 426, 686, 756, 818, 1111, 1181, 1210, 1635, 2060, 2097, 2192, 2262, 2324, 2394, 2456, 3178];
+        var bl = breaks.length;
+        var gy = jy + 621;
+        var leapJ = -14;
+        var jp = breaks[0];
+        var jm, jump, leap, leapG, march, n, i;
+        if(jy < jp || jy >= breaks[bl - 1]){ throw new Error('Invalid Jalaali year ' + jy); }
+        for(i = 1; i < bl; i += 1){
+            jm = breaks[i];
+            jump = jm - jp;
+            if(jy < jm) break;
+            leapJ = leapJ + div(jump, 33) * 8 + div(mod(jump, 33), 4);
+            jp = jm;
+        }
+        n = jy - jp;
+        leapJ = leapJ + div(n, 33) * 8 + div(mod(n, 33) + 3, 4);
+        if(mod(jump, 33) === 4 && jump - n === 4) leapJ += 1;
+        leapG = div(gy, 4) - div((div(gy, 100) + 1) * 3, 4) - 150;
+        march = 20 + leapJ - leapG;
+        if(!withoutLeap){
+            if(jump - n < 6){ n = n - jump + div(jump + 4, 33) * 33; }
+            leap = mod(mod(n + 1, 33) - 1, 4);
+            if(leap === -1) leap = 4;
+        }
+        return { leap: leap, gy: gy, march: march };
+    }
+    function j2d(jy, jm, jd){
+        var r = jalCal(jy, true);
+        return g2d(r.gy, 3, r.march) + (jm - 1) * 31 - div(jm, 7) * (jm - 7) + jd - 1;
+    }
+    function d2j(jdn){
+        var gy = d2g(jdn).gy;
+        var jy = gy - 621;
+        var r = jalCal(jy, false);
+        var jdn1f = g2d(gy, 3, r.march);
+        var jd, jm, k;
+        k = jdn - jdn1f;
+        if(k >= 0){
+            if(k <= 185){
+                jm = 1 + div(k, 31);
+                jd = mod(k, 31) + 1;
+                return { jy: jy, jm: jm, jd: jd };
+            }else{ k -= 186; }
+        }else{
+            jy -= 1;
+            k += 179;
+            if(r.leap === 1) k += 1;
+        }
+        jm = 7 + div(k, 30);
+        jd = mod(k, 30) + 1;
+        return { jy: jy, jm: jm, jd: jd };
+    }
+    function g2d(gy, gm, gd){
+        var d = div((gy + div(gm - 8, 6) + 100100) * 1461, 4) +
+                div(153 * mod(gm + 9, 12) + 2, 5) +
+                gd - 34840408;
+        d = d - div(div(gy + 100100 + div(gm - 8, 6), 100) * 3, 4) + 752;
+        return d;
+    }
+    function d2g(jdn){
+        var j, i, gd, gm, gy;
+        j = 4 * jdn + 139361631;
+        j = j + div(div(4 * jdn + 183187720, 146097) * 3, 4) * 4 - 3908;
+        i = div(mod(j, 1461), 4) * 5 + 308;
+        gd = div(mod(i, 153), 5) + 1;
+        gm = mod(div(i, 153), 12) + 1;
+        gy = div(j, 1461) - 100100 + div(8 - gm, 6);
+        return { gy: gy, gm: gm, gd: gd };
+    }
+    function toJalaali(gy, gm, gd){ return d2j(g2d(gy, gm, gd)); }
+    function toGregorian(jy, jm, jd){ return d2g(j2d(jy, jm, jd)); }
+    function isLeapJalaaliYear(jy){ return jalCal(jy, false).leap === 0; }
+    function jalaaliMonthLength(jy, jm){
+        if(jm <= 6) return 31;
+        if(jm <= 11) return 30;
+        if(isLeapJalaaliYear(jy)) return 30;
+        return 29;
+    }
+    return { toJalaali: toJalaali, toGregorian: toGregorian, isLeapJalaaliYear: isLeapJalaaliYear, jalaaliMonthLength: jalaaliMonthLength };
+})();
+
+var STORAGE_KEY = "shiftCalendarJalaliFinal";
+var TITLES_KEY = "shiftCalendarTitles";
+var PERSIAN_MONTHS = ["فروردین","اردیبهشت","خرداد","تیر","مرداد","شهریور","مهر","آبان","آذر","دی","بهمن","اسفند"];
+var DEFAULT_TITLES = ["اداره", "بیمارستان", "طلا فروشی", "فروشگاه", "مرخصی"];
+var SHIFT_CLASSES = ["admari", "bimarestan", "talafroshi", "forushgah", "morkhasi"];
+var LEGACY_MAP = {"کلانتری": "اداره", "جام جم": "فروشگاه", "زهرا جام‌جم": "طلا فروشی"};
+
+var shiftTitles = DEFAULT_TITLES.slice();
+var shifts = {};
+var currentYear = 0, currentMonth = 0, selectedKey = null;
+var selectedDay = 0;
+
+var calendar, monthTitle, modal, modalTitle, gregDate;
+
+function toPersianNum(value){
+    var nums = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+    return String(value).replace(/[0-9]/g, function(d){ return nums[parseInt(d,10)]; });
+}
+
+var memoryStorage = {};
+function safeGet(key){
+    try{ return localStorage.getItem(key); }
+    catch(e){ return memoryStorage[key] || null; }
+}
+function safeSet(key, val){
+    try{ localStorage.setItem(key, val); }
+    catch(e){ memoryStorage[key] = val; }
+}
+function $(id){ return document.getElementById(id); }
+
+function loadData(){
+    try{
+        var savedTitles = safeGet(TITLES_KEY);
+        if(savedTitles){
+            var parsedT = JSON.parse(savedTitles);
+            if(Array.isArray(parsedT) && parsedT.length === 5) shiftTitles = parsedT;
+        }
+    }catch(e){ shiftTitles = DEFAULT_TITLES.slice(); }
+
+    try{
+        var saved = safeGet(STORAGE_KEY);
+        shifts = saved ? JSON.parse(saved) : {};
+        if(!shifts || typeof shifts !== "object" || Array.isArray(shifts)) shifts = {};
+    }catch(e){ shifts = {}; }
+
+    migrateShifts();
+}
+
+function migrateShifts(){
+    var changed = false;
+    for(var key in shifts){
+        if(!Object.prototype.hasOwnProperty.call(shifts, key)) continue;
+        if(!Array.isArray(shifts[key])) continue;
+        var newList = [];
+        for(var i = 0; i < shifts[key].length; i++){
+            var s = shifts[key][i];
+            if(shiftTitles.indexOf(s) !== -1) newList.push(s);
+            else if(LEGACY_MAP[s] && shiftTitles.indexOf(LEGACY_MAP[s]) !== -1){
+                newList.push(LEGACY_MAP[s]); changed = true;
+            } else newList.push(s);
+        }
+        var unique = [];
+        for(var j = 0; j < newList.length; j++){
+            if(unique.indexOf(newList[j]) === -1) unique.push(newList[j]);
+        }
+        if(unique.length === 0) delete shifts[key];
+        else shifts[key] = unique;
+    }
+    if(changed) saveData();
+}
+
+function saveData(){
+    try{
+        safeSet(STORAGE_KEY, JSON.stringify(shifts));
+        return true;
+    }catch(e){ return false; }
+}
+function saveTitles(){
+    try{ safeSet(TITLES_KEY, JSON.stringify(shiftTitles)); return true; }
+    catch(e){ return false; }
+}
+
+function jalaliToGregorian(jy, jm, jd){
+    var g = jalaali.toGregorian(jy, jm, jd);
+    return [g.gy, g.gm, g.gd];
+}
+function gregorianToJalali(gy, gm, gd){
+    var j = jalaali.toJalaali(gy, gm, gd);
+    return [j.jy, j.jm, j.jd];
+}
+function jalaliMonthDays(year, month){ return jalaali.jalaaliMonthLength(year, month); }
+function getTodayJalali(){
+    var now = new Date();
+    return gregorianToJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+}
+function jalaliWeekday(year, month, day){
+    var g = jalaali.toGregorian(year, month, day);
+    var date = new Date(g.gy, g.gm - 1, g.gd, 12, 0, 0);
+    var map = [1, 2, 3, 4, 5, 6, 0];
+    return map[date.getDay()];
+}
+function dayKey(y, m, d){ return y + "-" + m + "-" + d; }
+
+function getShiftIndexByName(name){
+    for(var i = 0; i < shiftTitles.length; i++) if(shiftTitles[i] === name) return i;
+    return -1;
+}
+function getShiftClassByName(name){
+    var idx = getShiftIndexByName(name);
+    if(idx === -1) return "shift-default";
+    return "shift-" + SHIFT_CLASSES[idx];
+}
+function getDayShifts(key){
+    if(!Array.isArray(shifts[key])) return [];
+    return shifts[key];
+}
+
+function renderCounter(){
+    var counter = $("shiftCounter");
+    if(!counter) return;
+    var counts = {};
+    for(var t = 0; t < shiftTitles.length; t++) counts[shiftTitles[t]] = 0;
+
+    for(var key in shifts){
+        if(!Object.prototype.hasOwnProperty.call(shifts, key)) continue;
+        if(!Array.isArray(shifts[key])) continue;
+        var parts = key.split("-");
+        var ky = parseInt(parts[0], 10);
+        var km = parseInt(parts[1], 10);
+        if(ky !== currentYear || km !== currentMonth) continue;
+        for(var i = 0; i < shifts[key].length; i++){
+            var s = shifts[key][i];
+            if(Object.prototype.hasOwnProperty.call(counts, s)) counts[s]++;
+        }
+    }
+
+    var html = "";
+    for(var j = 0; j < shiftTitles.length; j++){
+        var name = shiftTitles[j];
+        if(counts[name] <= 0) continue;
+        html +=
+            '<div class="counter-item">' +
+                '<span class="counter-dot ' + SHIFT_CLASSES[j] + '"></span>' +
+                '<span>' + name + '</span>' +
+                '<span class="counter-count">' + toPersianNum(counts[name]) + '</span>' +
+            '</div>';
+    }
+    if(html === "") counter.innerHTML = '<div style="color:#94a3b8;font-size:13px;">هیچ شیفتی در این ماه ثبت نشده است</div>';
+    else counter.innerHTML = html;
+}
+
+function renderCalendar(){
+    if(!calendar) return;
+    calendar.innerHTML = "";
+    monthTitle.textContent = PERSIAN_MONTHS[currentMonth - 1] + " " + toPersianNum(currentYear);
+
+    var daysInMonth = jalaliMonthDays(currentYear, currentMonth);
+    var firstWeekday = jalaliWeekday(currentYear, currentMonth, 1);
+    var today = getTodayJalali();
+
+    var todayWeekday = -1;
+    if(currentYear === today[0] && currentMonth === today[1]){
+        todayWeekday = (firstWeekday + today[2] - 1) % 7;
+    }
+    var headerCells = document.querySelectorAll(".week-days .week-day");
+    for(var hc = 0; hc < headerCells.length; hc++){
+        headerCells[hc].classList.remove("today-col");
+    }
+    if(todayWeekday >= 0 && headerCells[todayWeekday]){
+        headerCells[todayWeekday].classList.add("today-col");
+    }
+
+    for(var i = 0; i < firstWeekday; i++){
+        var empty = document.createElement("div");
+        empty.className = "day-card empty";
+        calendar.appendChild(empty);
+    }
+
+    for(var d = 1; d <= daysInMonth; d++){
+        var card = document.createElement("div");
+        card.className = "day-card";
+
+        var wd = (firstWeekday + d - 1) % 7;
+        if(wd === 6) card.classList.add("friday");
+        if(currentYear === today[0] && currentMonth === today[1] && d === today[2]) card.classList.add("today");
+
+        var number = document.createElement("div");
+        number.className = "day-number";
+        number.textContent = toPersianNum(d);
+        card.appendChild(number);
+
+        var key = dayKey(currentYear, currentMonth, d);
+        var dayShifts = getDayShifts(key);
+        if(dayShifts.length === 1) card.classList.add("single-shift");
+
+        for(var s = 0; s < dayShifts.length; s++){
+            var tag = document.createElement("div");
+            tag.className = "shift-tag " + getShiftClassByName(dayShifts[s]);
+            tag.textContent = dayShifts[s];
+            card.appendChild(tag);
+        }
+
+        (function(day){
+            card.addEventListener("click", function(){ openModal(day); }, false);
+        })(d);
+
+        calendar.appendChild(card);
+    }
+
+    var used = firstWeekday + daysInMonth;
+    var total = Math.ceil(used / 7) * 7;
+    for(var t = 0; t < (total - used); t++){
+        var e = document.createElement("div");
+        e.className = "day-card empty";
+        calendar.appendChild(e);
+    }
+
+    renderCounter();
+}
+
+function renderShiftOptions(){
+    var container = $("shiftOptionsContainer");
+    if(!container) return;
+    var html = "";
+    for(var i = 0; i < shiftTitles.length; i++){
+        html +=
+            '<div class="shift-option ' + SHIFT_CLASSES[i] + '" data-shift="' + shiftTitles[i].replace(/"/g,'&quot;') + '">' +
+                shiftTitles[i] + ' <span class="check"></span>' +
+            '</div>';
+    }
+    container.innerHTML = html;
+
+    var options = container.querySelectorAll(".shift-option");
+    for(var j = 0; j < options.length; j++){
+        options[j].addEventListener("click", function(){
+            if(!selectedKey) return;
+            var shift = this.getAttribute("data-shift");
+            if(!Array.isArray(shifts[selectedKey])) shifts[selectedKey] = [];
+            var list = shifts[selectedKey];
+            var idx = list.indexOf(shift);
+            if(idx !== -1) list.splice(idx, 1);
+            else list.push(shift);
+            if(list.length === 0) delete shifts[selectedKey];
+            saveData();
+            renderCalendar();
+            updateShiftButtons();
+        }, false);
+    }
+}
+
+function goToPrevDay(){
+    if(!selectedKey) return;
+    var parts = selectedKey.split("-");
+    var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+    d--;
+    if(d < 1){
+        m--;
+        if(m < 1){ m = 12; y--; }
+        d = jalaliMonthDays(y, m);
+    }
+    selectedKey = dayKey(y, m, d);
+    selectedDay = d;
+    if(y !== currentYear || m !== currentMonth){
+        currentYear = y; currentMonth = m;
+        renderCalendar();
+    }
+    modalTitle.textContent = "انتخاب شیفت روز " + toPersianNum(d) + " " + PERSIAN_MONTHS[m - 1];
+    var g = jalaliToGregorian(y, m, d);
+    gregDate.textContent = "میلادی: " + g[0] + "/" + g[1] + "/" + g[2];
+    updateShiftButtons();
+    updateDayNavButtons();
+}
+
+function goToNextDay(){
+    if(!selectedKey) return;
+    var parts = selectedKey.split("-");
+    var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+    var maxDay = jalaliMonthDays(y, m);
+    d++;
+    if(d > maxDay){
+        d = 1;
+        m++;
+        if(m > 12){ m = 1; y++; }
+    }
+    selectedKey = dayKey(y, m, d);
+    selectedDay = d;
+    if(y !== currentYear || m !== currentMonth){
+        currentYear = y; currentMonth = m;
+        renderCalendar();
+    }
+    modalTitle.textContent = "انتخاب شیفت روز " + toPersianNum(d) + " " + PERSIAN_MONTHS[m - 1];
+    var g = jalaliToGregorian(y, m, d);
+    gregDate.textContent = "میلادی: " + g[0] + "/" + g[1] + "/" + g[2];
+    updateShiftButtons();
+    updateDayNavButtons();
+}
+
+function updateDayNavButtons(){
+    if(!selectedKey) return;
+    var parts = selectedKey.split("-");
+    var y = parseInt(parts[0], 10), m = parseInt(parts[1], 10), d = parseInt(parts[2], 10);
+    var prevDisabled = (y < 1400) || (y === 1400 && m === 1 && d === 1);
+    var maxDay = jalaliMonthDays(y, m);
+    var nextDisabled = (y > 1500) || (y === 1500 && m === 12 && d === maxDay);
+    $("prevDayBtn").disabled = prevDisabled;
+    $("nextDayBtn").disabled = nextDisabled;
+}
+
+function openModal(day){
+    selectedDay = day;
+    selectedKey = dayKey(currentYear, currentMonth, day);
+    modalTitle.textContent = "انتخاب شیفت روز " + toPersianNum(day) + " " + PERSIAN_MONTHS[currentMonth - 1];
+    var g = jalaliToGregorian(currentYear, currentMonth, day);
+    gregDate.textContent = "میلادی: " + g[0] + "/" + g[1] + "/" + g[2];
+    updateShiftButtons();
+    updateDayNavButtons();
+    modal.classList.add("show");
+}
+
+function updateShiftButtons(){
+    var buttons = document.querySelectorAll(".shift-option");
+    var dayShifts = selectedKey ? getDayShifts(selectedKey) : [];
+    for(var i = 0; i < buttons.length; i++){
+        var button = buttons[i];
+        var shift = button.getAttribute("data-shift");
+        var check = button.querySelector(".check");
+        if(dayShifts.indexOf(shift) !== -1){
+            button.classList.add("selected");
+            if(check) check.textContent = "✓";
+        }else{
+            button.classList.remove("selected");
+            if(check) check.textContent = "";
+        }
+    }
+}
+
+function exportShiftsToJSON(){
+    return JSON.stringify({
+        version: 1,
+        app: "shiftCalendarJalaliFinal",
+        exportDate: new Date().toISOString(),
+        shiftTitles: shiftTitles,
+        shifts: shifts
+    }, null, 2);
+}
+
+function getDateSuffix(){
+    var t = getTodayJalali();
+    return t[0] + "-" + t[1] + "-" + t[2];
+}
+
+function downloadFile(content, fileName, mimeType){
+    try {
+        var dataUri = "data:" + mimeType + ";charset=utf-8," + encodeURIComponent(content);
+        var a = document.createElement("a");
+        a.href = dataUri;
+        a.download = fileName;
+        a.rel = "noopener";
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){ if(a.parentNode) document.body.removeChild(a); }, 1500);
+        return;
+    } catch(e){}
+
+    try {
+        var blob = new Blob([content], { type: mimeType + ";charset=utf-8" });
+        var url = URL.createObjectURL(blob);
+        var a2 = document.createElement("a");
+        a2.href = url;
+        a2.download = fileName;
+        a2.style.display = "none";
+        document.body.appendChild(a2);
+        a2.click();
+        setTimeout(function(){
+            URL.revokeObjectURL(url);
+            if(a2.parentNode) document.body.removeChild(a2);
+        }, 1500);
+        return;
+    } catch(e){}
+
+    alert("دانلود امکان‌پذیر نیست. لطفاً صفحه را در مرورگر باز کنید.");
+}
+
+function shareAll(){
+    downloadFile(exportShiftsToJSON(), "shift-backup-" + getDateSuffix() + ".json", "application/json");
+}
+function shareAllTxt(){
+    downloadFile(exportShiftsToJSON(), "shift-backup-" + getDateSuffix() + ".txt", "text/plain");
+}
+
+function importShifts(file){
+    var reader = new FileReader();
+    reader.onload = function(e){
+        try {
+            var text = e.target.result;
+            if(text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+            text = text.trim();
+
+            var data = JSON.parse(text);
+            var importedShifts, importedTitles;
+
+            if(data && data.app === "shiftCalendarJalaliFinal" && data.shifts){
+                importedShifts = data.shifts;
+                importedTitles = data.shiftTitles || null;
+            } else if(data && typeof data === "object" && !data.shifts && !data.persons){
+                importedShifts = data;
+                importedTitles = null;
+            } else {
+                throw new Error("فرمت فایل نامعتبر است.");
+            }
+
+            if(typeof importedShifts !== "object" || importedShifts === null){
+                throw new Error("داده‌های شیفت نامعتبر است.");
+            }
+
+            if(importedTitles && Array.isArray(importedTitles) && importedTitles.length === 5){
+                shiftTitles = importedTitles;
+                saveTitles();
+                renderShiftOptions();
+            }
+
+            var mergeChoice = confirm(
+                "اطلاعات شیفت دریافت شد.\n\n" +
+                "تأیید = ادغام با اطلاعات فعلی\n" +
+                "لغو = جایگزینی کامل"
+            );
+
+            if(mergeChoice){
+                for(var key in importedShifts){
+                    if(!Object.prototype.hasOwnProperty.call(importedShifts, key)) continue;
+                    if(!Array.isArray(importedShifts[key])) continue;
+                    if(!Array.isArray(shifts[key])) shifts[key] = [];
+                    for(var i = 0; i < importedShifts[key].length; i++){
+                        var s = importedShifts[key][i];
+                        if(shifts[key].indexOf(s) === -1) shifts[key].push(s);
+                    }
+                }
+            } else {
+                shifts = importedShifts;
+            }
+
+            saveData();
+            renderCalendar();
+            alert("شیفت‌ها با موفقیت بارگذاری شد.");
+        } catch(error){
+            alert("خطا در خواندن فایل.\n" + error.message);
+        }
+    };
+    reader.readAsText(file, "UTF-8");
+}
+
+function renderSettingsFields(){
+    var container = $("settingsFields");
+    if(!container) return;
+    var html = "";
+    for(var i = 0; i < 5; i++){
+        var v = (shiftTitles[i] || "").replace(/"/g, "&quot;");
+        html +=
+            '<div class="settings-group">' +
+                '<input type="text" id="titleInput' + i + '" value="' + v + '" placeholder="عنوان شیفت ' + toPersianNum(i + 1) + '">' +
+            '</div>';
+    }
+    container.innerHTML = html;
+}
+
+function saveSettingsAction(){
+    var newTitles = [];
+    for(var i = 0; i < 5; i++){
+        var input = $("titleInput" + i);
+        var val = input ? input.value.trim() : "";
+        newTitles.push(val || DEFAULT_TITLES[i]);
+    }
+    var seen = {};
+    for(var j = 0; j < newTitles.length; j++){
+        if(seen[newTitles[j]]){ alert("عنوان‌ها نباید تکراری باشند: " + newTitles[j]); return; }
+        seen[newTitles[j]] = true;
+    }
+    var oldTitles = shiftTitles.slice();
+    var mapping = {};
+    for(var k = 0; k < 5; k++){
+        if(oldTitles[k] !== newTitles[k]) mapping[oldTitles[k]] = newTitles[k];
+    }
+    if(Object.keys(mapping).length > 0){
+        for(var key in shifts){
+            if(!Object.prototype.hasOwnProperty.call(shifts, key)) continue;
+            if(!Array.isArray(shifts[key])) continue;
+            for(var m = 0; m < shifts[key].length; m++){
+                if(mapping[shifts[key][m]]) shifts[key][m] = mapping[shifts[key][m]];
+            }
+        }
+        saveData();
+    }
+    shiftTitles = newTitles;
+    saveTitles();
+    renderShiftOptions();
+    renderCalendar();
+    $("settingsModal").classList.remove("show");
+}
+
+function attachEvents(){
+    $("prevMonth").addEventListener("click", function(){
+        currentMonth--;
+        if(currentMonth < 1){ currentMonth = 12; currentYear--; }
+        renderCalendar();
+    }, false);
+    $("nextMonth").addEventListener("click", function(){
+        currentMonth++;
+        if(currentMonth > 12){ currentMonth = 1; currentYear++; }
+        renderCalendar();
+    }, false);
+    $("todayBtn").addEventListener("click", function(){
+        var t = getTodayJalali();
+        currentYear = t[0]; currentMonth = t[1];
+        renderCalendar();
+    }, false);
+
+    $("closeModal").addEventListener("click", function(){
+        modal.classList.remove("show"); selectedKey = null;
+    }, false);
+    $("saveAndClose").addEventListener("click", function(){
+        modal.classList.remove("show"); selectedKey = null;
+    }, false);
+    modal.addEventListener("click", function(e){
+        if(e.target === modal){ modal.classList.remove("show"); selectedKey = null; }
+    }, false);
+
+    $("prevDayBtn").addEventListener("click", goToPrevDay, false);
+    $("nextDayBtn").addEventListener("click", goToNextDay, false);
+
+    $("settingsBtn").addEventListener("click", function(){
+        renderSettingsFields();
+        $("settingsModal").classList.add("show");
+    }, false);
+    $("saveSettings").addEventListener("click", saveSettingsAction, false);
+    $("closeSettings").addEventListener("click", function(){
+        $("settingsModal").classList.remove("show");
+    }, false);
+    $("settingsModal").addEventListener("click", function(e){
+        if(e.target === this) this.classList.remove("show");
+    }, false);
+
+    $("aboutBtn").addEventListener("click", function(){
+        $("aboutModal").classList.add("show");
+    }, false);
+    $("closeAbout").addEventListener("click", function(){
+        $("aboutModal").classList.remove("show");
+    }, false);
+    $("aboutModal").addEventListener("click", function(e){
+        if(e.target === this) this.classList.remove("show");
+    }, false);
+
+    $("sendBtn").addEventListener("click", function(){
+        $("shareModal").classList.add("show");
+    }, false);
+    $("closeShare").addEventListener("click", function(){
+        $("shareModal").classList.remove("show");
+    }, false);
+    $("shareModal").addEventListener("click", function(e){
+        if(e.target === this) this.classList.remove("show");
+    }, false);
+    $("shareAllBtn").addEventListener("click", function(){
+        shareAll();
+        $("shareModal").classList.remove("show");
+    }, false);
+    $("shareAllTxtBtn").addEventListener("click", function(){
+        shareAllTxt();
+        $("shareModal").classList.remove("show");
+    }, false);
+
+    $("receiveBtn").addEventListener("click", function(){
+        $("fileInput").click();
+    }, false);
+    $("fileInput").addEventListener("change", function(e){
+        var file = e.target.files[0];
+        if(file) importShifts(file);
+        e.target.value = "";
+    }, false);
+}
+
+function init(){
+    calendar = $("calendar");
+    monthTitle = $("monthTitle");
+    modal = $("modal");
+    modalTitle = $("modalTitle");
+    gregDate = $("gregDate");
+
+    loadData();
+    renderShiftOptions();
+    attachEvents();
+
+    var t = getTodayJalali();
+    currentYear = t[0];
+    currentMonth = t[1];
+    renderCalendar();
+}
+
+if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init, false);
+} else {
+    init();
+}
+</script>
+
+</body>
+</html>
